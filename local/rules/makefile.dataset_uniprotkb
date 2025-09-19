@@ -1,0 +1,69 @@
+.DELETE_ON_ERROR:
+
+PFAM_DIR = ../pfam/
+
+
+info.txt:
+	wget -O$@ 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/README'
+
+
+eukaryota:
+	../../local/bin/uniprotkb_proteomes_download.sh Eukaryota
+
+archaea:
+	../../local/bin/uniprotkb_proteomes_download.sh Archaea
+
+bacteria:
+	../../local/bin/uniprotkb_proteomes_download.sh Bacteria
+
+viruses:
+	../../local/bin/uniprotkb_proteomes_download.sh Viruses
+
+
+similar.txt:
+	wget -O$@ 'https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/docs/$@'
+
+similar.tsv: similar.txt parse_similar.awk
+	awk -f parse_similar.awk $< > $@
+
+
+Pfam-A.regions.tsv:
+	ln -s $(PFAM_DIR)$@ ./$@
+
+Pfam-A.clans.tsv:
+	ln -s $(PFAM_DIR)$@ ./$@
+
+Pfam-A.regions.dic: Pfam-A.regions.tsv
+	cat $< | cut -f1,5 | sort | uniq > $@
+
+Pfam-A.clans.dic: Pfam-A.clans.tsv
+	cat $< | cut -f1,2 | awk -F"\t" '{{if($$2==""){$$2=$$1}; print $$1"\t"$$2}}' | sort | uniq > $@
+
+
+big_%_untranslated.tsv:
+	for f in ./$*_proteomes/download/*.gene2acc.gz; do \
+		echo ">$$(basename $$f .gz)" >> $@; \
+		gunzip -c $$f >> $@; \
+	done
+
+big_%_translated.tsv: big_%_untranslated.tsv Pfam-A.regions.dic
+	cat $(word 1, $^) | translate -a -d -j -v -p '^>' -e ERROR $(word 2, $^) 2 > $@
+
+big_%_translated_clan.tsv: big_%_untranslated.tsv Pfam-A.regions.dic Pfam-A.clans.dic
+	cat $(word 1, $^) | translate -a -d -j -v -p '^>' -e ERROR $(word 2, $^) 2 | translate -a -d -j -v -p '^>' -e ERROR $(word 3, $^) 3 | awk -F"\t" '/^>/ {print; next} {print $$1"\t"$$2"\t"$$4"\t"$$5}' > $@
+
+big_archaea_bacteria_translated.tsv: big_archaea_translated.tsv big_bacteria_translated.tsv
+	cat $^ > $@
+
+big_archaea_bacteria_translated_clan.tsv: big_archaea_translated_clan.tsv big_bacteria_translated_clan.tsv
+	cat $^ > $@
+
+big_%_observed_prot_fam.tsv: big_%_translated.tsv
+	cat $< | grep -v ">UP" | grep -v ERROR | cut -f3 | sort | uniq > $@
+
+big_%_countmatrix.csv: big_%_translated.tsv
+	generate_cm $< -o $@
+
+big_%_countmatrix_clan.csv: big_%_translated_clan.tsv
+	generate_cm $< -o $@
+

@@ -1,0 +1,9 @@
+dataset/pfam/userman.txt
+**/*.gz
+**/*.tar
+**/Pfam-A.*
+**/*.tsv
+**/*.dic
+**/*.csv
+**/*.txt
+

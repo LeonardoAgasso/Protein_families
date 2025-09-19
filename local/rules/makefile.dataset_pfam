@@ -1,0 +1,31 @@
+.DELETE_ON_ERROR:
+
+CURRENT_RELEASE_FTP_PATH := https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/
+
+# files from ftp (current release)
+Pfam-A.%.gz:
+	wget -O$@ '$(CURRENT_RELEASE_FTP_PATH)$@'
+
+userman.txt:
+	wget 'https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/userman.txt'
+
+%.tsv: %.tsv.gz
+	gunzip -c $< > $@
+
+%.fasta: %.fasta.gz
+	gunzip -c $< > $@
+
+%.dead: %.dead.gz
+	gunzip -c $< > $@
+
+%.full: %.full.gz
+	gunzip -c $< > $@
+
+%.txt: %.txt.gz
+	gunzip -c $< > $@
+
+%.dat: %.dat.gz
+	gunzip -c $< > $@
+
+%.hmm: %.hmm.gz
+	gunzip -c $< > $@
