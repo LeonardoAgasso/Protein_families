@@ -6,4 +6,7 @@ dataset/pfam/userman.txt
 **/*.dic
 **/*.csv
 **/*.txt
-
+**/*.png
+**/*.dmp
+**/*.tmp
+**/tmp
