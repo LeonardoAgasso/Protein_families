@@ -1,0 +1,22 @@
+.DELETE_ON_ERROR:
+
+download:
+	wget 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/new_taxdump.tar.Z';
+	wget 'https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/taxdump_readme.txt';
+	tar -xvf new_taxdump.tar.Z;
+	rm new_taxdump.tar.Z
+
+taxid_to_name.tsv:
+	cat names.dmp | grep -P '\tscientific name\t' | cut -f1,3 > $@
+
+taxid_to_parent.tsv:
+	cat nodes.dmp | cut -f1,3 > $@
+
+taxid_to_rank.tsv:
+	cat nodes.dmp | cut -f1,5 > $@
+
+taxid_to_parent.names.tsv: taxid_to_parent.tsv taxid_to_name.tsv
+	cat $(word 1, $^) | translate -a -d -j -v -e MISSING_NODE $(word 2, $^) 1 | translate -a -d -j -v -e MISSING_PARENT $(word 2, $^) 3 > $@
+
+taxid_to_parent.names.ranks.tsv: taxid_to_parent.names.tsv taxid_to_rank.tsv
+	cat $(word 1, $^) | translate -a -d -j -v -e MISSING_NODE $(word 2, $^) 1 | translate -a -d -j -v -e MISSING_RANK $(word 2, $^) 4 > $@
