@@ -1,0 +1,17 @@
+Description:
+"The TaxID (matrices identify protemes via a string "UPID_TaxID") univoquely maps to a TaxNode (NCBI Taxonomy entry).
+Each entry includes a Primary name, a Secondary name and a NameIds (non-public identifier managed by NameBank).
+Eaxhbash: line 1: y+: command not found
+Each TaxID has a labelled primary name (formal or informal name) which shows up on the NCBI records.
+In the NCBI Taxonomy this is the current name for the TaxNode labelled as Homo sapiens:
+Homo sapiens Linneaus, 1758 (with a NameBank Entity Id, which is not displayed publicly)."
+
+Access:
+"The NCBI Taxonomy can be viewed and interacted with three main ways:
+1) 	NCBI Taxonomy browser: [...] (link: https://www.ncbi.nlm.nih.gov/taxonomy);
+2) 	Taxonomy Entrez supports Boolean queries [...], (link: https://www.ncbi.nlm.nih.gov/Taxonomy/Browser.wwwtax.cgi);
+3) 	Full text files of the complete database that gets updated every hour at the Taxonomy FTP site as taxdump files.[...]
+	The most important files are: nodes.dmp (which maps TaxIds to their parent TaxIds), and names.dmp (which maps names to TaxIds).[...]
+	Other files are delnodes.dmp (link: https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/new_taxdump/) "
+
+Source: https://www.ncbi.nlm.nih.gov/sites/books/NBK53758/
